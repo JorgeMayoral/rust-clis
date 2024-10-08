@@ -1,3 +1,6 @@
+#![warn(clippy::pedantic)]
+#![allow(clippy::missing_errors_doc)]
+
 use std::{
     fs::File,
     io::{self, BufRead, BufReader},
@@ -42,8 +45,8 @@ impl Config {
             .get_matches();
         let files = matches
             .get_many::<String>("files")
-            .unwrap()
-            .map(|v| v.to_owned())
+            .unwrap_or_default()
+            .map(std::borrow::ToOwned::to_owned)
             .collect::<Vec<String>>();
         let number_lines = matches.get_flag("number");
         let number_nonblank_lines = matches.get_flag("number_nonblank");
@@ -61,7 +64,7 @@ impl Config {
                 Err(err) => eprintln!("Failed to open {filename}: {err}"),
                 Ok(file) => {
                     let mut line_count = 0;
-                    for (_, line_result) in file.lines().enumerate() {
+                    for line_result in file.lines() {
                         let line = line_result?;
                         match (self.number_lines, self.number_nonblank_lines) {
                             (true, false) => {
@@ -69,11 +72,11 @@ impl Config {
                                 println!("{line_count:6}\t{line}");
                             }
                             (false, true) => {
-                                if !line.is_empty() {
+                                if line.is_empty() {
+                                    println!("{line}");
+                                } else {
                                     line_count += 1;
                                     println!("{line_count:6}\t{line}");
-                                } else {
-                                    println!("{line}");
                                 }
                             }
                             (false, false) => println!("{line}"),
