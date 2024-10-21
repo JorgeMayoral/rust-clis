@@ -1,9 +1,9 @@
 [workspace]
 resolver = "2"
-members = ["echo", "cat"]
+members = ["echo", "cat", "head"]
 
 [workspace.dependencies]
-clap = { version = "4.5.19", features = ["cargo"] }
+clap = { version = "4.5.19", features = ["cargo", "derive"] }
 assert_cmd = "2.0.16"
 predicates = "3.1.2"
 rand = "0.8.5"
